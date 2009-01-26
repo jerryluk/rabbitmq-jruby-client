@@ -1,0 +1,5 @@
+Add this to your environment.rb to create an initializer
+
+require 'rabbitmq_client'
+Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new
+Workling::Remote.dispatcher.client = Workling::Clients::WorklingRabbitMQClient.new

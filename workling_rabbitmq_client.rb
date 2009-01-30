@@ -9,7 +9,7 @@ module Workling
       end
       
       def close
-        @client.disconnect
+        @client.disconnect if @client.connected?
       end
       
       def request(queue, value)

@@ -10,10 +10,24 @@ class RabbitMQClient
   include_class('com.rabbitmq.client.ConnectionParameters')
   include_class('com.rabbitmq.client.ConnectionFactory')
   include_class('com.rabbitmq.client.Channel')
-  include_class('com.rabbitmq.client.AMQP')
   include_class('com.rabbitmq.client.Consumer')
-  include_class('com.rabbitmq.client.QueueingConsumer')
+  include_class('com.rabbitmq.client.DefaultConsumer')
   include_class('java.lang.String') { |package, name| "J#{name}" }
+  
+  class QueueConsumer < DefaultConsumer
+    def initialize(channel, block)
+      @channel = channel
+      @block = block
+      super(channel)
+    end
+    
+    def handleDelivery(consumer_tag, envelope, properties, body)
+      delivery_tag = envelope.get_delivery_tag
+      message_body = Marshal.load(String.from_java_bytes(body))
+      @block.call message_body
+      @channel.basic_ack(delivery_tag, false)
+    end
+  end
   
   class Queue
     def initialize(name, channel)
@@ -33,7 +47,6 @@ class RabbitMQClient
     def publish(message_body, props=nil)
       auto_bind
       message_body_byte = Marshal.dump(message_body).to_java_bytes
-      # message_body_byte = JString.new(message_body).get_bytes
       @channel.basic_publish(@exchange.name, @routing_key, props, message_body_byte)
       message_body
     end
@@ -45,7 +58,6 @@ class RabbitMQClient
       response = @channel.basic_get(@name, no_ack)
       if response
         props = response.get_props
-        # message_body = String.from_java_bytes(response.get_body)
         message_body = Marshal.load(String.from_java_bytes(response.get_body))
         delivery_tag = response.get_envelope.get_delivery_tag
         @channel.basic_ack(delivery_tag, false)
@@ -54,22 +66,8 @@ class RabbitMQClient
     end
     
     def subscribe(&block)
-      Thread.new do |t|
-        no_ack = false
-        consumer = QueueingConsumer.new(@channel)
-        @channel.basic_consume(@name, no_ack, consumer)
-        loop do
-          begin
-            response = consumer.next_delivery
-            # message_body = String.from_java_bytes(response.get_body)
-            message_body = Marshal.load(String.from_java_bytes(response.get_body))
-            yield message_body
-          rescue Exception => e
-            puts e.inspect
-          end
-          @channel.basic_ack(response.get_envelope.get_delivery_tag, false)
-        end
-      end
+      no_ack = false
+      @channel.basic_consume(@name, no_ack, QueueConsumer.new(@channel, block))
     end
     
     protected
@@ -131,6 +129,11 @@ class RabbitMQClient
   def disconnect
     @channel.close
     @connection.close
+    @connection = nil
+  end
+  
+  def connected?
+    @connection != nil
   end
   
   def queue(name)

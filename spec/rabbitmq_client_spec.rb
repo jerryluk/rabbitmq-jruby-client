@@ -41,12 +41,15 @@ describe RabbitMQClient do
     end
     
     it "should able to subscribe with a callback function" do
+      a = 0
       @queue.bind(@exchange)
-      @queue.publish('2')
-      t = @queue.subscribe do |v|
-       v.should == "2"        
+      @queue.subscribe do |v|
+         a += v.to_i
       end
-      Thread.kill t
+      @queue.publish("1")
+      @queue.publish("2")
+      sleep 1
+      a.should == 3
     end
   end
 end

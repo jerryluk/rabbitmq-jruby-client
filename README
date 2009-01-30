@@ -1,5 +1,22 @@
-Add this to your environment.rb to create an initializer
 
-require 'rabbitmq_client'
+This project is a JRuby wrapper of the Java RabbitMQ Client from Rabbit Technologies
+
+http://www.rabbitmq.com/
+
+Using this library does not require you to use EventMachine for subscribing a RabbitMQ queue.
+
+To use RabbitMQ JRuby Client with Workling:
+1. Copy workling_rabbitmq_client.rb and workling_rabbitmq_subscriber.rb to lib
+Create an initializer 'rabbitmq.rb' in 'config/initializers'
+
+require 'workling_rabbitmq_client'
 Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new
 Workling::Remote.dispatcher.client = Workling::Clients::WorklingRabbitMQClient.new
+
+Optional: To use subscriber
+Modify vendor/plugins/workling/script/listen.rb, added this after the require statements
+
+require 'workling_rabbitmq_subscriber'
+
+To start Workling: (You can use script/workling_client because it uses daemons)
+jruby vendor/plugins/workling/script/listen.rb

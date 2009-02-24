@@ -11,10 +11,7 @@ spec = Gem::Specification.new do |s|
   s.description = %q{A RabbitMQ client for JRuby}
   s.homepage = "http://www.linkedin.com/in/jerryluk" 
   s.summary = %q{A RabbitMQ client for JRuby}
-  begin
-    s.files = Dir["{docs,lib,spec}/**/*"]
-  rescue Exception => e
-  end
+  s.files = Dir["{docs,lib,spec}/**/*"]
   s.require_paths = ["lib"]
   s.has_rdoc = false
   s.rubygems_version = %q{1.3.0}

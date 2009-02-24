@@ -101,29 +101,33 @@ class RabbitMQClient
   # Instance Methods
   def initialize(options={})
     # server address
-    host = options[:host] || '127.0.0.1'
-    port = options[:port] || 5672
+    @host = options[:host] || '127.0.0.1'
+    @port = options[:port] || 5672
     
     # login details
-    username = options[:username] || 'guest'
-    password = options[:password] || 'guest'
-    vhost = options[:vhost] || '/'
+    @username = options[:username] || 'guest'
+    @password = options[:password] || 'guest'
+    @vhost = options[:vhost] || '/'
     
     # queues and exchanges
     @queues = {}
     @exchanges = {}
     
+    connect
+    # Disconnect before the object is destroyed
+    define_finalizer(self, lambda {|id| self.disconnect if self.connected? })
+    self
+  end
+  
+  def connect
     params = ConnectionParameters.new
-    params.set_username(username)
-    params.set_password(password)
-    params.set_virtual_host(vhost)
+    params.set_username(@username)
+    params.set_password(@password)
+    params.set_virtual_host(@vhost)
     params.set_requested_heartbeat(0)
     conn_factory = ConnectionFactory.new(params)
-    @connection = conn_factory.new_connection(host, port)
+    @connection = conn_factory.new_connection(@host, @port)
     @channel = @connection.create_channel
-    # Disconnect before the object is destroyed
-    define_finalizer(self, lambda {|id| self.disconnect})
-    self
   end
   
   def disconnect

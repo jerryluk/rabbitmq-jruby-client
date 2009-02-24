@@ -3,17 +3,15 @@
 
 spec = Gem::Specification.new do |s| 
   s.name = "rabbitmq-jruby-client" 
-  s.version = "0.1.1" 
-  s.author = "Jerry Luk" 
-  s.email = "jerryluk@gmail.com" 
+  s.version = "0.1.2" 
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.author = ["Jerry Luk"]
+  s.email = %q{jerryluk@gmail.com}
+  s.date = %q{2009-02-09}
+  s.description = %q{A RabbitMQ client for JRuby}
   s.homepage = "http://www.linkedin.com/in/jerryluk" 
-  s.platform = Gem::Platform::CURRENT 
-  s.summary = "A RabbitMQ Client for JRuby"
-  begin
-    s.files = Dir["{docs,lib,spec}/**/*"] 
-  rescue Exception => e
-  end
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README"]
-  s.require_path = "lib"
+  s.summary = %q{A RabbitMQ client for JRuby}
+  s.require_paths = ["lib"]
+  s.has_rdoc = false
+  s.rubygems_version = %q{1.3.0}
 end 

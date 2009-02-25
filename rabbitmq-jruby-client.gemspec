@@ -1,5 +1,4 @@
 #! /usr/bin/env jruby
-# require 'rubygems' 
 
 spec = Gem::Specification.new do |s| 
   s.name = "rabbitmq-jruby-client" 
@@ -12,7 +11,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = "http://www.linkedin.com/in/jerryluk" 
   s.summary = %q{A RabbitMQ client for JRuby}
   s.files = Dir["{lib,spec}/**/*"]
-  s.require_paths = ["lib"]
+  s.require_path = "lib"
   s.has_rdoc = false
   s.rubygems_version = %q{1.3.0}
 end 

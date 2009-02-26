@@ -12,5 +12,6 @@ spec = Gem::Specification.new do |s|
   s.require_path = 'lib'
   # s.files = Dir["{lib, spec}/**/*"]
   s.files = ["README", "MIT-LICENSE", "lib/commons-cli-1.1.jar", "lib/commons-io-1.2.jar", "lib/rabbitmq-client.jar", "lib/junit.jar", "lib/rabbitmq_client.rb"]
+  s.test_files = ["spec/rabbitmq_client_spec.rb"]
   s.has_rdoc = false
 end 

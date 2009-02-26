@@ -10,6 +10,6 @@ spec = Gem::Specification.new do |s|
   s.description = s.summary
   s.homepage = 'http://www.linkedin.com/in/jerryluk'
   s.require_path = 'lib'
-  s.files = Dir["{lib}/**/*"]
+  s.files = Dir["{lib, spec}/**/*"]
   s.has_rdoc = false
 end 

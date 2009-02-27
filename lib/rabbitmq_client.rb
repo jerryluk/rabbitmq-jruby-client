@@ -73,7 +73,7 @@ class RabbitMQClient
     protected
     def auto_bind
       unless @exchange
-        exchange = Exchange.new("@name_exchange", 'fanout', @channel)
+        exchange = Exchange.new("#{@name}_exchange", 'fanout', @channel)
         self.bind(exchange)
       end
     end

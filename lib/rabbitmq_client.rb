@@ -38,7 +38,7 @@ class RabbitMQClient
     end
     
     def bind(exchange, routing_key=nil)
-      @routing_key = routing_key || "#{@name}_#{Time.new.to_i.to_s}_#{rand(100).to_s}"
+      @routing_key = routing_key || "#{@name}_#{Time.now.to_i.to_s}_#{rand(1<<64).to_s}"
       @exchange = exchange
       @channel.queue_bind(@name, @exchange.name, @routing_key)
       self

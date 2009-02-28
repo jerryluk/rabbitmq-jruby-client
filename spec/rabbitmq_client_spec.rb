@@ -7,6 +7,10 @@ describe RabbitMQClient do
     @client = RabbitMQClient.new
   end
   
+  after(:each) do
+    @client.disconnect
+  end
+  
   it "should able to create a connection" do
     @client.connection.should_not be_nil
   end
@@ -20,7 +24,7 @@ describe RabbitMQClient do
     exchange.should_not be_nil
   end
   
-  describe Queue do
+  describe Queue, "Basic non-persistent queue" do
     before(:each) do
       @queue = @client.queue('test_queue')
       @exchange = @client.exchange('test_exchange', 'direct')
@@ -48,6 +52,51 @@ describe RabbitMQClient do
       end
       @queue.publish("1")
       @queue.publish("2")
+      sleep 1
+      a.should == 3
+    end
+    
+    it "should raise an exception if binding a persistent queue with non-persistent exchange and vice versa" do
+      persistent_queue = @client.queue('test_queue1', true)
+      persistent_exchange = @client.exchange('test_exchange1', 'fanout', true)
+      lambda { persistent_queue.bind(@exchange) }.should raise_error(RabbitMQClient::RabbitMQClientError)
+      lambda { @queue.bind(persistent_exchange) }.should raise_error(RabbitMQClient::RabbitMQClientError)
+    end
+    
+    it "should raise an exception if publish a persistent message on non-duration queue" do
+      @queue.bind(@exchange)
+      lambda { @queue.persistent_publish('Hello') }.should raise_error(RabbitMQClient::RabbitMQClientError)
+    end
+  end
+  
+  describe Queue, "Basic persistent queue" do
+    before(:each) do
+      @queue = @client.queue('test_durable_queue', true)
+      @exchange = @client.exchange('test_durable_exchange', 'fanout', true)
+    end
+    
+    it "should able to create a queue" do
+      @queue.should_not be_nil
+    end
+    
+    it "should able to bind to an exchange" do
+      @queue.bind(@exchange).should_not be_nil
+    end
+    
+    it "should able to publish and retrieve a message" do
+      @queue.bind(@exchange)
+      @queue.persistent_publish('Hello World')
+      @queue.retrieve.should == 'Hello World'
+    end
+    
+    it "should able to subscribe with a callback function" do
+      a = 0
+      @queue.bind(@exchange)
+      @queue.subscribe do |v|
+         a += v.to_i
+      end
+      @queue.persistent_publish("1")
+      @queue.persistent_publish("2")
       sleep 1
       a.should == 3
     end

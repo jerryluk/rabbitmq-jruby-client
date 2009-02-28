@@ -1,22 +1,49 @@
+RabbitMQ JRuby Client
+=====================
+rabbitmq-jruby-client allows you to use RabbitMQ Client from JRuby using the official Java RabbitMQ client from Rabbit Technologies
+See more at http://www.rabbitmq.com
 
-This project is a JRuby wrapper of the Java RabbitMQ Client from Rabbit Technologies
+Getting Started
+===============
+1. Make sure you can install RubyGem from GitHub (you only have to do this once): jruby -S gem sources -a http://gems.github.com
+2. Install and start RabbitMQ (see below)
+3. Install JRuby RabbitMQ Client: jruby -S gem install jerryluk-rabbitmq-jruby-client
 
-http://www.rabbitmq.com/
+Example Usage
+=============
+gem 'jerryluk-rabbitmq-jruby-client'
+require 'rabbitmq_client'
 
-Using this library does not require you to use EventMachine for subscribing a RabbitMQ queue.
+# Initializes the new client and connect to the server
+client = RabbitMQClient.new
 
-To use RabbitMQ JRuby Client with Workling:
-1. Copy workling_rabbitmq_client.rb and workling_rabbitmq_subscriber.rb to lib
-Create an initializer 'rabbitmq.rb' in 'config/initializers'
+# Initializes a new queue
+queue = client.queue('queue_name')
 
-require 'workling_rabbitmq_client'
-Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new
-Workling::Remote.dispatcher.client = Workling::Clients::WorklingRabbitMQClient.new
+# Initializes a new exchange
+exchange = client.exchange('exchange_name')
 
-Optional: To use subscriber
-Modify vendor/plugins/workling/script/listen.rb, added this after the require statements
+# Connects queue with the exchange
+queue.bind(exchange)
 
-require 'workling_rabbitmq_subscriber'
+# Publish a message to the queue
+queue.publish('message body')
 
-To start Workling: (You can use script/workling_client because it uses daemons)
-jruby vendor/plugins/workling/script/listen.rb
+# Retrieve a message from the queue
+message = queue.retrieve
+
+# Subscribe to a queue with callback
+queue.subscribe do |message|
+  # do something with message
+end
+
+Installing RabbitMQ on OS X
+===========================
+1. Install MacPorts
+2. sudo port install erlang
+3. wget http://www.rabbitmq.com/releases/rabbitmq-server/v1.5.3/rabbitmq-server-generic-unix-1.5.3.tar.gz
+4. tar zxvf rabbitmq-server-1.5.3.tar.gz
+5. sudo mv rabbitmq_server-1.5.3 /opt/local/lib/erlang/lib
+
+To run RabbitMQ
+6. sudo /opt/local/lib/erlang/lib/rabbitmq_server-1.5.3/sbin/rabbitmq-server

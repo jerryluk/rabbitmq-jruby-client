@@ -133,7 +133,7 @@ class RabbitMQClient
     @queues = {}
     @exchanges = {}
     
-    connect if options[:auto_connect]
+    connect if options[:auto_connect] || true
     # Disconnect before the object is destroyed
     define_finalizer(self, lambda {|id| self.disconnect if self.connected? })
     self

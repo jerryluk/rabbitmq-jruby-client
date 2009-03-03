@@ -119,7 +119,7 @@ class RabbitMQClient
   attr_reader :connection
   
   # Instance Methods
-  def initialize(options={:auto_connect => true})
+  def initialize(options={})
     # server address
     @host = options[:host] || '127.0.0.1'
     @port = options[:port] || 5672
@@ -133,7 +133,7 @@ class RabbitMQClient
     @queues = {}
     @exchanges = {}
     
-    connect if options[:auto_connect] || true
+    connect unless options[:no_auto_connect]
     # Disconnect before the object is destroyed
     define_finalizer(self, lambda {|id| self.disconnect if self.connected? })
     self

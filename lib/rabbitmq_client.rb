@@ -64,7 +64,7 @@ class RabbitMQClient
       message_body
     end
     
-    def persistent_publish(message_body, props=MessageProperties::PERSISTENT_BASIC)
+    def persistent_publish(message_body, props=MessageProperties::PERSISTENT_TEXT_PLAIN)
       raise RabbitMQClientError, "can only publish persistent message to durable queue" unless @durable
       publish(message_body, props)
     end

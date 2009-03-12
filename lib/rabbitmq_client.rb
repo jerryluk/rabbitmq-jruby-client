@@ -12,7 +12,9 @@ class RabbitMQClient
   include_class('com.rabbitmq.client.Channel')
   include_class('com.rabbitmq.client.Consumer')
   include_class('com.rabbitmq.client.DefaultConsumer')
+  include_class('com.rabbitmq.client.QueueingConsumer')
   include_class('com.rabbitmq.client.MessageProperties')
+  include_class('java.lang.InterruptedException')
   include_class('java.lang.String') { |package, name| "J#{name}" }
   
   class RabbitMQClientError < StandardError;end
@@ -86,6 +88,22 @@ class RabbitMQClient
     def subscribe(&block)
       no_ack = false
       @channel.basic_consume(@name, no_ack, QueueConsumer.new(@channel, block))
+    end
+    
+    def loop_subscribe(&block)
+      no_ack = false
+      consumer = QueueingConsumer.new(@channel)
+      @channel.basic_consume(@name, no_ack, consumer)
+      loop do
+        begin
+          delivery = consumer.next_delivery
+          message_body = Marshal.load(String.from_java_bytes(delivery.get_body))
+          block.call message_body
+          @channel.basic_ack(delivery.get_envelope.get_delivery_tag, false)
+        rescue InterruptedException => ie
+          next
+        end
+      end
     end
     
     protected

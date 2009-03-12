@@ -32,10 +32,16 @@ queue.publish('message body')
 # Retrieve a message from the queue
 message = queue.retrieve
 
-# Subscribe to a queue with callback
+# Subscribe to a queue with callback. The callback will be run in a new thread for each new message. 
 queue.subscribe do |message|
   # do something with message
 end
+
+# Subscribe to a queue in a loop. No new thread will be created.
+queue.loop_subscribe do |message|
+  # do something with message
+end
+
 
 Installing RabbitMQ on OS X
 ===========================

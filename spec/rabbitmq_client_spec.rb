@@ -42,6 +42,8 @@ describe RabbitMQClient do
       @queue.bind(@exchange)
       @queue.publish('Hello World')
       @queue.retrieve.should == 'Hello World'
+      @queue.publish('人大')
+      @queue.retrieve.should == '人大'
     end
     
     it "should able to subscribe with a callback function" do
@@ -53,6 +55,25 @@ describe RabbitMQClient do
       @queue.publish("1")
       @queue.publish("2")
       sleep 1
+      a.should == 3
+    end
+    
+    it "should able to subscribe to a queue using loop_subscribe" do
+      a = 0
+      @queue.bind(@exchange)
+      Thread.new do
+        begin
+          timeout(1) do
+            @queue.loop_subscribe do |v|
+              a += v.to_i
+            end
+          end
+        rescue Timeout::Error => e
+        end
+      end
+      @queue.publish("1")
+      @queue.publish("2")
+      sleep 2
       a.should == 3
     end
     

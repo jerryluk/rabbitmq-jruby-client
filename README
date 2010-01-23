@@ -48,4 +48,4 @@ Installing RabbitMQ on OS X
 2. sudo port install rabbitmq-server
 
 To run RabbitMQ
-6. sudo rabbitmq-server
+3. sudo rabbitmq-server

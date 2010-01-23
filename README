@@ -5,13 +5,12 @@ See more at http://www.rabbitmq.com
 
 Getting Started
 ===============
-1. Make sure you can install RubyGem from GitHub (you only have to do this once): jruby -S gem sources -a http://gems.github.com
-2. Install and start RabbitMQ (see below)
-3. Install JRuby RabbitMQ Client: jruby -S gem install jerryluk-rabbitmq-jruby-client
+1. Install and start RabbitMQ (see below)
+2. Install JRuby RabbitMQ Client: jruby -S gem install rabbitmq-jruby-client
 
 Example Usage
 =============
-gem 'jerryluk-rabbitmq-jruby-client'
+gem 'rabbitmq-jruby-client'
 require 'rabbitmq_client'
 
 # Initializes the new client and connect to the server
@@ -46,10 +45,7 @@ end
 Installing RabbitMQ on OS X
 ===========================
 1. Install MacPorts
-2. sudo port install erlang
-3. wget http://www.rabbitmq.com/releases/rabbitmq-server/v1.5.3/rabbitmq-server-generic-unix-1.5.3.tar.gz
-4. tar zxvf rabbitmq-server-1.5.3.tar.gz
-5. sudo mv rabbitmq_server-1.5.3 /opt/local/lib/erlang/lib
+2. sudo port install rabbitmq-server
 
 To run RabbitMQ
-6. sudo /opt/local/lib/erlang/lib/rabbitmq_server-1.5.3/sbin/rabbitmq-server
+6. sudo rabbitmq-server

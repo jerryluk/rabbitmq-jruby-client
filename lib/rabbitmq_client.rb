@@ -45,11 +45,15 @@ class RabbitMQClient
     end
     
     def bind(exchange, routing_key='')
+      raise RabbitMQClientError, "queue and exchange has different durable property" unless @durable == exchange.durable
       @routing_key = routing_key
       @exchange = exchange
-      raise RabbitMQClientError, "queue and exchange has different durable property" unless @durable == exchange.durable
       @channel.queue_bind(@name, @exchange.name, @routing_key)
       self
+    end
+    
+    def unbind
+      @channel.queue_unbind(@name, @exchange.name, @routing_key) if @exchange
     end
     
     # Set props for different type of message. Currently they are:
@@ -132,7 +136,8 @@ class RabbitMQClient
       @type = type
       @durable = durable
       @channel = channel
-      @channel.exchange_declare(@name, type.to_s, durable)
+      # Declare a non-passive, auto-delete exchange
+      @channel.exchange_declare(@name, type.to_s, false, durable, true, nil)
       self
     end
   end
@@ -177,6 +182,7 @@ class RabbitMQClient
   end
   
   def disconnect
+    @queues.values.each { |q| q.unbind }
     @channel.close
     @connection.close
     @connection = nil

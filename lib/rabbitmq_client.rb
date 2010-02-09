@@ -106,6 +106,14 @@ class RabbitMQClient
       end
     end
     
+    def purge
+      @channel.queue_purge(@name)
+    end
+    
+    def delete
+      @channel.queue_delete(@name)
+    end
+    
     protected
     def auto_bind
       unless @exchange

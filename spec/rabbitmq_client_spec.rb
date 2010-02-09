@@ -24,26 +24,45 @@ describe RabbitMQClient do
     exchange.should_not be_nil
   end
   
+  # Commented out because it does not return in RSpec
+  # it "should be able to delete the queue" do
+  #   client = RabbitMQClient.new
+  #   queue = client.queue('test_queue')
+  #   exchange = client.exchange('test_exchange', 'direct')
+  #   queue.delete
+  #   lambda {
+  #     queue.publish('Hello World')
+  #   }.should raise_error
+  # end
+  
   describe Queue, "Basic non-persistent queue" do
     before(:each) do
       @queue = @client.queue('test_queue')
       @exchange = @client.exchange('test_exchange', 'direct')
     end
     
-    it "should able to create a queue" do
+    it "should be able to create a queue" do
       @queue.should_not be_nil
     end
     
-    it "should able to bind to an exchange" do
+    it "should be able to bind to an exchange" do
       @queue.bind(@exchange).should_not be_nil
     end
     
-    it "should able to publish and retrieve a message" do
+    it "should be able to publish and retrieve a message" do
       @queue.bind(@exchange)
       @queue.publish('Hello World')
       @queue.retrieve.should == 'Hello World'
       @queue.publish('人大')
       @queue.retrieve.should == '人大'
+    end
+    
+    it "should be able to purge the queue" do
+      @queue.publish('Hello World')
+      @queue.publish('Hello World')
+      @queue.publish('Hello World')
+      @queue.purge
+      @queue.retrieve.should == nil
     end
     
     it "should able to subscribe with a callback function" do
@@ -58,7 +77,7 @@ describe RabbitMQClient do
       a.should == 3
     end
     
-    it "should able to subscribe to a queue using loop_subscribe" do
+    it "should be able to subscribe to a queue using loop_subscribe" do
       a = 0
       @queue.bind(@exchange)
       Thread.new do
@@ -96,21 +115,21 @@ describe RabbitMQClient do
       @exchange = @client.exchange('test_durable_exchange', 'fanout', true)
     end
     
-    it "should able to create a queue" do
+    it "should be able to create a queue" do
       @queue.should_not be_nil
     end
     
-    it "should able to bind to an exchange" do
+    it "should be able to bind to an exchange" do
       @queue.bind(@exchange).should_not be_nil
     end
     
-    it "should able to publish and retrieve a message" do
+    it "should be able to publish and retrieve a message" do
       @queue.bind(@exchange)
       @queue.persistent_publish('Hello World')
       @queue.retrieve.should == 'Hello World'
     end
     
-    it "should able to subscribe with a callback function" do
+    it "should be able to subscribe with a callback function" do
       a = 0
       @queue.bind(@exchange)
       @queue.subscribe do |v|
